@@ -1,9 +1,20 @@
 [group1]
 test ansible_host=18.185.133.139
 
+[group2]
+cent ansible_host=3.125.169.39
+
 [group1:vars]
 ansible_user=ubuntu
 ansible_port=22
 ansible_ssh_private_key_file=/Users/hero/.ssh/anise.pem
 ansible_python_interpreter=/usr/bin/python3
 ANSIBLE_DEBUG=1
+
+[group2:vars]
+ansible_user=centos
+ansible_port=22
+ansible_ssh_private_key_file=/Users/hero/.ssh/anise.pem
+ansible_python_interpreter=/usr/bin/python3
+ANSIBLE_DEBUG=1
+ansible_python_interpreter=/usr/bin/python2.7
