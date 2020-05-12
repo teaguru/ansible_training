@@ -1,23 +1,11 @@
-[group0]
-rabbit ansible_host=35.228.167.135
-
-[group1]
-test ansible_host=18.185.133.139
-
 [group2]
-google ansible_host=35.232.56.249
+google ansible_host=35.193.160.60
 
-[group0:vars]
-ansible_user=ubuntu
-ansible_port=22
-ansible_ssh_private_key_file=/Users/hero/.ssh/id_rsa
-ansible_python_interpreter=/usr/bin/python3
-ANSIBLE_DEBUG=1
 
 [group2:vars]
-ansible_user=avsyakikh 
+ansible_user=teadmin
 ansible_port=22
-ansible_ssh_private_key_file=/Users/hero/.ssh/id_rsa
+ansible_ssh_private_key_file=/home/teadmin/.ssh/id_rsa
 ansible_python_interpreter=/usr/bin/python3
 ANSIBLE_DEBUG=1
 

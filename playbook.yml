@@ -1,8 +1,7 @@
 - name: Install docker centos
   gather_facts: No 
   hosts: group2
-  vars:
-    user_name: ubuntu
+ 
   tasks:
     - name: Install  utils
       package:
