@@ -1,0 +1,5 @@
+---
+create_containers: 1
+default_container_name: docker-from-roles
+default_container_image: golang
+default_container_command: 

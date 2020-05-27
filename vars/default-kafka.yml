@@ -1,0 +1,4 @@
+create_containers: 1
+default_container_name: dockermq
+default_container_image: bitnami/rabbitmq
+default_container_command: 

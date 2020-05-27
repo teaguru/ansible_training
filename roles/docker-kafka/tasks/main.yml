@@ -1,0 +1,86 @@
+---
+
+  - name: Install aptitude using apt
+    apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+  - name: Install required system packages
+    apt: name={{ item }} state=latest update_cache=yes
+    loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Update apt and install docker-ce
+    apt: update_cache=yes name=docker-ce state=latest
+
+  - name: Install Docker Module for Python
+    pip:
+      name: docker
+      state: latest
+
+  - name: Install docker-compose
+    get_url: 
+      url : https://github.com/docker/compose/releases/download/1.26.0-rc4/docker-compose-Linux-x86_64
+      dest: /usr/local/bin/docker-compose
+      mode: 'u+x,g+x'
+    
+
+  
+  - name: Install pip, python-dev package with apt
+    apt:
+        pkg: "{{ item }}"
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
+    with_items:
+      - python-dev
+      - python-pip
+    
+    # Upgrade pip with pip to fix angstwad/docker.ubuntu/pull/35 and docker-py/issues/525
+    # Install latest version when no specific release is set.
+  - name: Upgrade latest pip, setuptools, docker-py and docker-compose with pip
+    pip:
+      name: "{{ item.name }}"
+      state: latest
+    with_items:
+      - { name: pip, version: "latest", install: true }
+      - { name: setuptools, version: "latest", install: true }
+   
+      - { name: docker-compose, version: "latest", install: true }
+    when: (item.version=="latest" and item.install)
+    ignore_errors: yes
+
+  # Install specific version when set in the variables
+  - name: Install specific pip, setuptools, docker-py and docker-compose with pip
+    pip:
+      name: "{{ item.name }}"
+      state: present
+      version: "{{ item.version }}"
+    with_items:
+      - { name: pip, version: "latest", install: "true" }
+      - { name: setuptools, version: "latest", install: "true" }
+    
+      - { name: docker-compose, version: "latest", install: "true" }
+    when: (item.version!="latest" and item.install)
+
+  
+
+  - name: Copy compose file
+    copy:
+      src: files/docker-compose.yml
+      dest:  /usr/local/bin/
+
+  - name: Create and start services
+    docker_compose:
+      project_src:  /usr/local/bin/
+    register: output
+
+  - debug:
+      var: output    
