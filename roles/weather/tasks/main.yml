@@ -1,0 +1,61 @@
+--- 
+
+  - name: Install aptitude using apt
+    apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+  - name: Install required system packages
+    apt: name={{ item }} state=latest update_cache=yes
+    loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Update apt and install docker-ce
+    apt: update_cache=yes name=docker-ce state=latest
+
+  - name: Install Docker Module for Python
+    pip:
+      name: docker
+      state: latest
+
+  - name: Copy image files
+    copy:
+      src: ./Dockerfile
+      dest: /files/
+
+  - name: Copy script
+    copy:
+      src: ./script.py
+      dest: /files/
+
+  - name: Copy logpath
+    copy:
+      src: ./daemon.json
+      dest: /files/
+
+  
+  - name: make image
+    docker_image:
+      name: weather
+      build:
+        path: /files/
+      tag: dev  
+      source: build
+
+
+
+  - name: Manage log
+    docker_container:
+      name: weather
+      image: weather:dev
+      log_driver: syslog
+      env:
+        OPENWEATHER_API_KEY: "d16adf74dfa25e71333d0ced8378e0be"
+        CITY_NAME: "Honolulu"
